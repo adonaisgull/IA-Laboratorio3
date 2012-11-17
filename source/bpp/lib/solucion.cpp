@@ -1,6 +1,6 @@
 #include "../include/solucion.h"
 
-Solucion::Solucion()
-{
+Solucion::Solucion(Instancia instancia) {
+
 
 }

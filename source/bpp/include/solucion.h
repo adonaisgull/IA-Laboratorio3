@@ -2,6 +2,9 @@
 #define SOLUCION_H
 
 #include "instancia.h"
+#include <vector>
+
+using namespace std;
 
 class Solucion
 {
@@ -14,8 +17,10 @@ private:
     bool esFactible();
 
 public:
-    Solucion(Instancia); // Genera una solucion inicial. Puede que haya varias formas, entonces hacer metodos diferentes para crearla.
+    Solucion(Instancia);    // Genera una solucion inicial. Puede que haya varias formas, entonces hacer metodos diferentes para crearla.
     Solucion generarMejorVecina();
+
+    inline unsigned getNumeroContenedores() { return numero_contenedores; }
 
 };
 
