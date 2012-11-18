@@ -17,8 +17,13 @@ private:
     bool esFactible();
 
 public:
+    Solucion();
     Solucion(Instancia);    // Genera una solucion inicial. Puede que haya varias formas, entonces hacer metodos diferentes para crearla.
     Solucion generarMejorVecina();
+
+    // PARA BORRAR O NO
+    void mostrar();
+
 
     inline unsigned getNumeroContenedores() { return numero_contenedores; }
 

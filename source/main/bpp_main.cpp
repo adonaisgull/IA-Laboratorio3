@@ -8,18 +8,28 @@
 
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 
 using namespace std;
 
 int main(void){
 
-    char ruta_fichero[255];
-
-    cout << "Introduzca ruta fichero instancias: ";
-    cin >> ruta_fichero;
-
-    ifstream fichero(ruta_fichero, ifstream::in);
+    //char ruta_fichero[255];
     Bpp bpp;
+    Solucion inicial;
+
+    //cout << "Introduzca ruta fichero instancias: ";
+    //cin >> ruta_fichero;
+
+    ifstream fichero("data.txt", ifstream::in);
     bpp.cargarInstancias(fichero);
+    fichero.close();
+
+    srand(time(NULL));
+
+    for(int i=0; i<10; i++){
+        inicial = bpp.obtenerSolucionInicial(0);
+        inicial.mostrar();
+    }
 
 }

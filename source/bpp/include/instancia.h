@@ -19,6 +19,12 @@ private:
 public:
     Instancia(string, unsigned, unsigned, unsigned, vector<unsigned>);
 
+    inline string getNombre() { return nombre; }
+    inline unsigned getCapacidadContenedores() { return capacidad_contenedores; }
+    inline unsigned getNumeroPaquetes() { return numero_paquetes; }
+    inline unsigned getMejorSolucion() { return mejor_solucion; }
+    inline vector<unsigned> getLongitudPaquetes(){ return longitud_paquetes; }
+
     // BORRAR
     void mostrar();
 
