@@ -16,7 +16,7 @@ int main(void){
 
     //char ruta_fichero[255];
     Bpp bpp;
-    Solucion inicial;
+    Solucion final;
 
     //cout << "Introduzca ruta fichero instancias: ";
     //cin >> ruta_fichero;
@@ -27,9 +27,10 @@ int main(void){
 
     srand(time(NULL));
 
-    for(int i=0; i<10; i++){
-        inicial = bpp.obtenerSolucionInicial(0);
-        inicial.mostrar();
-    }
+    //cout << "Solucion inicial: ";
 
+    final = bpp.ILS(0);
+
+    cout << "Solucion final: ";
+    final.mostrar();
 }

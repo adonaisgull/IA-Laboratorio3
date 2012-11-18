@@ -2,37 +2,44 @@
 #include <iostream>
 #include <fstream>
 
-
 using namespace std;
 
 Bpp::Bpp(){
 
 }
 
-/*
 Solucion Bpp::ILS(unsigned indice) {
 
+    // El indice es el indice de la instancia con la que se va a trabajar
     Solucion mejor;
     Solucion candidata;
     unsigned ultimo_cambio = 0;
 
-    mejor=obtenerSolucionInicial(indice);
+    candidata = obtenerSolucionInicial(indice); // Creamos una solucion inicial factible
+    mejor = candidata;      // La unica solucion que tenemos, es la mejor inicialmente
 
     do {
+        //cout << "-> Solucion Inicial: ";
+        //candidata.mostrar();
 
-        candidata = mejor.mejorVecina();
+        while(candidata.mejorarILS());  // mejoramos la candidata hasta obtener maximo local
+        //cout << "   Maximo local: ";
+        //candidata.mostrar();
 
-        if(candidata.getNumeroContenedores < mejor.getNumeroContenedores){
-        	mejor = candidata;
-        	ultimo_cambio = 0;
+        if(candidata.getNumeroContenedores() < mejor.getNumeroContenedores()){
+            mejor = candidata;  // Aceptamos el maximo local como mejor solucion si igual o mejor el numero de contenedores
+            ultimo_cambio = 0;
         }
         else {
-        	ultimo_cambio++;
+            ultimo_cambio++;
         }
 
-    } while(ultimo_cambio < paradaILS);
+        candidata = obtenerSolucionInicial(indice); // Obtenemos otra solucion inicial diferente
+
+    } while(ultimo_cambio < 100); // este control es valido si dentro de mejorarILS, la mejor no siempre se hace igual
+
+    return mejor;
 }
-*/
 
 void Bpp::cargarInstancias(ifstream &fichero){
 

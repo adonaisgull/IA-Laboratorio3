@@ -17,6 +17,7 @@ private:
     vector<unsigned> longitud_paquetes;
 
 public:
+    Instancia() {};
     Instancia(string, unsigned, unsigned, unsigned, vector<unsigned>);
 
     inline string getNombre() { return nombre; }
@@ -28,8 +29,8 @@ public:
     // BORRAR
     void mostrar();
 
-    unsigned obtenerLongitud(unsigned); // Recibe el ID del paquete para devolver su longitud
-    unsigned obtenerPaquete();  // devuelve el ID de un paquete segun un criterio de seleccion. Quiza se pueda poner una opcion (azar, mayor, menor)
+    inline unsigned getLongitudPaquete(unsigned indice) { return longitud_paquetes[indice]; } // Recibe el ID del paquete para devolver su longitud
+    //unsigned obtenerPaquete();  // devuelve el ID de un paquete segun un criterio de seleccion. Quiza se pueda poner una opcion (azar, mayor, menor)
 
 };
 

@@ -17,10 +17,8 @@ private:
     vector<Instancia> instancias;
     unsigned numero_instancias;
 
-
-
     // Métodos que implementan las heuristicas. Reciben el indice de la instancia y devuelven una solucion
-    Solucion ILS(unsigned);
+
     Solucion GA(unsigned);
     Solucion SA(unsigned);
     Solucion GRASP(unsigned);
@@ -29,6 +27,7 @@ private:
 
 public:
     Bpp();
+    Solucion ILS(unsigned);
     void cargarInstancias(ifstream &);
     Solucion obtenerSolucionInicial(unsigned);  // Devuelve una solucion inicial a partir del indice de la instancia que se le pasa
 
