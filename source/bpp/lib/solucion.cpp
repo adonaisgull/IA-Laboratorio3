@@ -46,24 +46,23 @@ Solucion::Solucion(Instancia instancia) {
     //numero_contenedores = contenedor_actual+1;
 }
 
-bool Solucion::mejorarILS(){
+Solucion Solucion::vecinaMasVacio_menosEspacio(){
 
     unsigned contenedor_origen = 0;                         // contenedor mas vacio
     vector<unsigned> paquetes_del_contenedor;               // paqutes del contenedor mas vacio
     unsigned paquete_candidato;                             // paquete mas largo del contenedor mas vacio
     unsigned contenedor_destino;                            // contenedor al que moveremos el paquete
     unsigned capacidad_minima;
+    Solucion vecina = this->getCopia();
 
     // Buscar el contenedor con mayor capacidad libre
     for(unsigned i=0; i<capacidad_contenedores.size(); i++)
         if(capacidad_contenedores[i] > capacidad_contenedores[contenedor_origen])
             contenedor_origen = i;
 
-    // Obtenemos los paquetes que contiene el contenedor mas vacio y intentamos buscar mejoras moviendo los paquetes de mayor a menor
+    // Obtenemos mayor paquete del contenedor mas vacio
     paquetes_del_contenedor = paquetesDelContenedor(contenedor_origen);
-
     paquete_candidato = paquetes_del_contenedor[0];
-
     for(unsigned i=0; i<paquetes_del_contenedor.size(); i++) {
         if(instancia.getLongitudPaquete(paquetes_del_contenedor[i]) > instancia.getLongitudPaquete(paquete_candidato)){
             paquete_candidato = paquetes_del_contenedor[i];
@@ -72,24 +71,62 @@ bool Solucion::mejorarILS(){
 
     // Buscamos el contenedor de destino, que sera aquel en el que el paquete seleccionado deje menos espacio libre
     capacidad_minima = instancia.getCapacidadContenedores();
-
     for(unsigned i=0; i<capacidad_contenedores.size(); i++){
-        if(i != contenedor_origen){                                                        // Excluimos el contenedor en el que esta actualmente
-            if(instancia.getLongitudPaquete(paquete_candidato) <= capacidad_contenedores[i]){   // Comprobacion necesaria por ser de tipo unsigned
+        if(i != contenedor_origen){
+            if(instancia.getLongitudPaquete(paquete_candidato) <= capacidad_contenedores[i]){
                 if((capacidad_contenedores[i] - instancia.getLongitudPaquete(paquete_candidato)) < capacidad_minima){
-                    contenedor_destino = i;                                                     // Cambiamos el candidato si la capacidad restante es menor
+                    contenedor_destino = i;
                     capacidad_minima = capacidad_contenedores[i]-instancia.getLongitudPaquete(paquete_candidato);
                 }
             }
         }
     }
 
+    // Si el paquete cabe en otro contenedor minimizando su capacidad, lo metemos
     if(capacidad_minima < instancia.getCapacidadContenedores()){
-        moverPaquete(paquete_candidato, contenedor_destino);
-        return true;
+        vecina.moverPaquete(paquete_candidato, contenedor_destino);
+    }
+    else {      // Si no cabe en ninguno, se genera un nuevo contenedor y se mete
+        vecina.meterPaqueteEnContenedorNuevo(paquete_candidato);
     }
 
-    return false;
+    return vecina;
+}
+
+Solucion Solucion::vecinaAzar(){
+    Solucion vecina;
+
+    return vecina;
+}
+
+void Solucion::meterPaqueteEnContenedorNuevo(unsigned paquete){
+    numero_contenedores++;
+    capacidad_contenedores.push_back(instancia.getCapacidadContenedores() - instancia.getLongitudPaquete(paquete));
+    solucion[paquete] = numero_contenedores-1;
+}
+
+Solucion Solucion::getCopia(){
+
+    Solucion copia;
+    copia.setNumeroContenedores(numero_contenedores);
+    copia.setCapacidadContenedores(capacidad_contenedores);
+    copia.setSolucion(solucion);
+    copia.setInstancia(instancia);
+    return copia;
+}
+
+void Solucion::cambiarPaquete(unsigned paquete_a, unsigned paquete_b){
+
+    unsigned contenedor_a = solucion[paquete_a];
+    unsigned contenedor_b = solucion[paquete_b];
+
+    solucion[paquete_a] = contenedor_b;
+    capacidad_contenedores[contenedor_a] += instancia.getLongitudPaquete(paquete_a);
+    capacidad_contenedores[contenedor_b] -= instancia.getLongitudPaquete(paquete_a);
+
+    solucion[paquete_b] = contenedor_a;
+    capacidad_contenedores[contenedor_b] += instancia.getLongitudPaquete(paquete_b);
+    capacidad_contenedores[contenedor_a] -= instancia.getLongitudPaquete(paquete_b);
 }
 
 vector<unsigned> Solucion::paquetesDelContenedor(unsigned contenedor){
@@ -127,9 +164,10 @@ void Solucion::moverPaquete(unsigned paquete, unsigned contenedor_destino){
 void Solucion::mostrar(){
 
     cout << "Numero de contenedores: " << numero_contenedores << endl;
-    /*for(unsigned i=0; i<solucion.size(); i++){
-        cout << i << " -> " << solucion[i] << " ("<< capacidad_contenedores[solucion[i]] << ")"<<endl;
+    for(unsigned i=0; i<solucion.size(); i++){
+        if(solucion[i] > 120)
+            cout << "ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+        //cout << i << " -> " << solucion[i] << " ("<< capacidad_contenedores[solucion[i]] << ")"<<endl;
     }
-    */
 
 }

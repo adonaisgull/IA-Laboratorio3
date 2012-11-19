@@ -11,34 +11,48 @@ Bpp::Bpp(){
 Solucion Bpp::ILS(unsigned indice) {
 
     // El indice es el indice de la instancia con la que se va a trabajar
-    Solucion mejor;
-    Solucion candidata;
+    Solucion maximo;
+    Solucion maximo_local;
+    Solucion vecina;
+    bool maximo_local_econtrado;
     unsigned ultimo_cambio = 0;
+    unsigned busquedas_de_vecina = 0;
 
-    candidata = obtenerSolucionInicial(indice); // Creamos una solucion inicial factible
-    mejor = candidata;      // La unica solucion que tenemos, es la mejor inicialmente
+    maximo_local = obtenerSolucionInicial(indice); // Creamos una solucion inicial factible
+    maximo = maximo_local;      // La unica solucion que tenemos, es la mejor inicialmente
 
-    do {
-        //cout << "-> Solucion Inicial: ";
-        //candidata.mostrar();
+    cout << "maximo inicial: ";
+    maximo.mostrar();
 
-        while(candidata.mejorarILS());  // mejoramos la candidata hasta obtener maximo local
-        //cout << "   Maximo local: ";
-        //candidata.mostrar();
+    do {        
+        maximo_local_econtrado = false;
+        do {
+            // Buscamos el maximo local
+            vecina = maximo_local.vecinaMasVacio_menosEspacio();        // Obtenemos una vecina a partir de maximo local actual
+            busquedas_de_vecina++;
 
-        if(candidata.getNumeroContenedores() < mejor.getNumeroContenedores()){
-            mejor = candidata;  // Aceptamos el maximo local como mejor solucion si igual o mejor el numero de contenedores
+            if(vecina.getNumeroContenedores() <= maximo_local.getNumeroContenedores())  // Si se mejora o se iguala el maximo local lo cambiamos
+                maximo_local = vecina;
+            else
+                maximo_local_econtrado = true;
+
+        } while(!maximo_local_econtrado && busquedas_de_vecina < 100000);
+
+        if(maximo_local.getNumeroContenedores() <= maximo.getNumeroContenedores()){
+            maximo = maximo_local;  // Aceptamos el maximo local como mejor solucion si igual o mejor el numero de contenedores
             ultimo_cambio = 0;
+            cout << "maximo mejorado: ";
+            maximo_local.mostrar();
         }
         else {
             ultimo_cambio++;
         }
 
-        candidata = obtenerSolucionInicial(indice); // Obtenemos otra solucion inicial diferente
+        maximo_local = obtenerSolucionInicial(indice); // Obtenemos otra solucion inicial diferente
 
-    } while(ultimo_cambio < 100); // este control es valido si dentro de mejorarILS, la mejor no siempre se hace igual
+    } while(ultimo_cambio < 100000); // este control es valido si dentro de mejorarILS, la mejor no siempre se hace igual
 
-    return mejor;
+    return maximo;
 }
 
 void Bpp::cargarInstancias(ifstream &fichero){
