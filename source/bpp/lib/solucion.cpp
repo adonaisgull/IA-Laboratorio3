@@ -46,6 +46,7 @@ Solucion::Solucion(Instancia instancia) {
     //numero_contenedores = contenedor_actual+1;
 }
 
+// METODO BUSCAR VECINA. SEL PAQ: CONTENEDOR MAS VACIO; SEL CONT: MENOS ESPACIO TRAS CAMBIO
 Solucion Solucion::vecinaMasVacio_MenosEspacio(){
 
     unsigned contenedor_origen = 0;                         // contenedor mas vacio
@@ -93,9 +94,12 @@ Solucion Solucion::vecinaMasVacio_MenosEspacio(){
         vecina.meterPaqueteEnContenedorNuevo(paquete);
     }
 
+    vecina.setUltimoPaqueteMovido(paquete); // Guardamos el ultimo paquete movido
+
     return vecina;
 }
 
+// METODO BUSCAR VECINA. SEL PAQ: CONTENEDOR MAS VACIO; SEL CONT: PRIMERO DONDE QUEPA
 Solucion Solucion::vecinaMasVacio_Primero(){
 
     unsigned contenedor_origen;                         // contenedor mas vacio
@@ -131,9 +135,12 @@ Solucion Solucion::vecinaMasVacio_Primero(){
     // Si no cupo en ningun contenedor creamos uno nuevo
     vecina.meterPaqueteEnContenedorNuevo(paquete);
 
+    vecina.setUltimoPaqueteMovido(paquete); // Guardamos el ultimo paquete movido
+
     return vecina;
 }
 
+// METODO BUSCAR VECINA. SEL PAQ: AZAR; SEL CONT: MENOS ESPACIO TRAS CAMBIO
 Solucion Solucion::vecinaAzar_MenosEspacio(){
 
     Solucion vecina = this->getCopia();
@@ -167,10 +174,12 @@ Solucion Solucion::vecinaAzar_MenosEspacio(){
     else
         vecina.meterPaqueteEnContenedorNuevo(paquete);
 
-    return vecina;
+    vecina.setUltimoPaqueteMovido(paquete); // Guardamos el ultimo paquete movido
 
+    return vecina;
 }
 
+// METODO BUSCAR VECINA. SEL PAQ: AZAR; SEL CONT: PRIMERO DONDE QUEPA
 Solucion Solucion::vecinaAzar_Primero(){
 
     Solucion vecina = this->getCopia();
@@ -189,9 +198,13 @@ Solucion Solucion::vecinaAzar_Primero(){
 
     // Si no se pudo meter, entonces lo metemos en un contenedor nuevo
     vecina.meterPaqueteEnContenedorNuevo(paquete);
+
+    vecina.setUltimoPaqueteMovido(paquete); // Guardamos el ultimo paquete movido
+
     return vecina;
 }
 
+// METODO BUSCAR VECINA. SEL PAQ: AZAR; SEL CONT: AZAR
 Solucion Solucion::vecinaAzar_Azar(){
 
     Solucion vecina = this->getCopia();
@@ -213,9 +226,27 @@ Solucion Solucion::vecinaAzar_Azar(){
     else
         vecina.meterPaqueteEnContenedorNuevo(paquete);
 
+    vecina.setUltimoPaqueteMovido(paquete); // Guardamos el ultimo paquete movido
+
     return vecina;
 }
 
+// METODO PARA CAMBIAR UN PAQUETE POR OTRO
+void Solucion::cambiarPaquete(unsigned paquete_a, unsigned paquete_b){
+
+    unsigned contenedor_a = solucion[paquete_a];
+    unsigned contenedor_b = solucion[paquete_b];
+
+    solucion[paquete_a] = contenedor_b;
+    capacidad_contenedores[contenedor_a] += instancia.getLongitudPaquete(paquete_a);
+    capacidad_contenedores[contenedor_b] -= instancia.getLongitudPaquete(paquete_a);
+
+    solucion[paquete_b] = contenedor_a;
+    capacidad_contenedores[contenedor_b] += instancia.getLongitudPaquete(paquete_b);
+    capacidad_contenedores[contenedor_a] -= instancia.getLongitudPaquete(paquete_b);
+}
+
+// METODO PARA METER UN PAQUETE EN UN CONTENEDOR NUEVO
 void Solucion::meterPaqueteEnContenedorNuevo(unsigned paquete){
 
     unsigned origen = solucion[paquete];
@@ -231,6 +262,7 @@ void Solucion::meterPaqueteEnContenedorNuevo(unsigned paquete){
     solucion[paquete] = numero_contenedores-1;
 }
 
+// METODO PARA MOVER UN PAQUETE A UN CONTENEDOR EXISTENTE
 void Solucion::moverPaquete(unsigned paquete, unsigned contenedor_destino){
 
     unsigned origen = solucion[paquete];
@@ -245,6 +277,7 @@ void Solucion::moverPaquete(unsigned paquete, unsigned contenedor_destino){
         eliminarContenedor(origen);
 }
 
+// METODO PARA ELIMINAR UN CONTENEDOR
 void Solucion::eliminarContenedor(unsigned contenedor){
 
     capacidad_contenedores.erase(capacidad_contenedores.begin()+contenedor);  // eliminamos el contenedor
@@ -254,9 +287,9 @@ void Solucion::eliminarContenedor(unsigned contenedor){
             solucion[i] -= 1;
 
     numero_contenedores -= 1;
-
 }
 
+// METODO PARA PREGUNTAR SI UN CONTENEDOR ESTA VACIO
 bool Solucion::contenedorVacio(unsigned contenedor){
 
     if(capacidad_contenedores[contenedor] == instancia.getCapacidadContenedores())
@@ -265,30 +298,7 @@ bool Solucion::contenedorVacio(unsigned contenedor){
     return false;
 }
 
-Solucion Solucion::getCopia(){
-
-    Solucion copia;
-    copia.setNumeroContenedores(numero_contenedores);
-    copia.setCapacidadContenedores(capacidad_contenedores);
-    copia.setSolucion(solucion);
-    copia.setInstancia(instancia);
-    return copia;
-}
-
-void Solucion::cambiarPaquete(unsigned paquete_a, unsigned paquete_b){
-
-    unsigned contenedor_a = solucion[paquete_a];
-    unsigned contenedor_b = solucion[paquete_b];
-
-    solucion[paquete_a] = contenedor_b;
-    capacidad_contenedores[contenedor_a] += instancia.getLongitudPaquete(paquete_a);
-    capacidad_contenedores[contenedor_b] -= instancia.getLongitudPaquete(paquete_a);
-
-    solucion[paquete_b] = contenedor_a;
-    capacidad_contenedores[contenedor_b] += instancia.getLongitudPaquete(paquete_b);
-    capacidad_contenedores[contenedor_a] -= instancia.getLongitudPaquete(paquete_b);
-}
-
+// METODO PARA OBTENER LOS PAQUETES QUE HAY EN UN CONTENEDOR
 vector<unsigned> Solucion::paquetesDelContenedor(unsigned contenedor){
 
     vector<unsigned> paquetes;
@@ -300,11 +310,22 @@ vector<unsigned> Solucion::paquetesDelContenedor(unsigned contenedor){
     return paquetes;
 }
 
+// METODO PARA OBTENER UNA COPIA DE LA SOLUCION
+Solucion Solucion::getCopia(){
+
+    Solucion copia;
+    copia.setNumeroContenedores(numero_contenedores);
+    copia.setCapacidadContenedores(capacidad_contenedores);
+    copia.setSolucion(solucion);
+    copia.setInstancia(instancia);
+    return copia;
+}
 
 
+// METODO PARA MOSTRAR LA SOLUCION
 void Solucion::mostrar(){
 
-    cout << "Numero de contenedores: " << numero_contenedores << endl;
+    cout << numero_contenedores;
     for(unsigned i=0; i<solucion.size(); i++){
         if(solucion[i] > 120)
             cout << "ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;

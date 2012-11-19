@@ -5,10 +5,7 @@
 
 using namespace std;
 
-Bpp::Bpp(){
-
-}
-
+// METODO PARA REALIZAR LA BUSQUEDA 'ITERATED LOCAL SEARCH'
 Solucion Bpp::ILS(unsigned instancia) {
 
     Solucion maximo;
@@ -18,18 +15,14 @@ Solucion Bpp::ILS(unsigned instancia) {
     unsigned ultimo_cambio = 0;
     unsigned busquedas_de_vecina = 0;
 
-    maximo_local = obtenerSolucionInicial(instancia); // Creamos una solucion inicial factible a partir de una instancia
-    maximo = maximo_local;      // La unica solucion que tenemos, es la mejor inicialmente
+    maximo_local = obtenerSolucionInicial(instancia);   // Creamos una solucion inicial factible a partir de una instancia
+    maximo = maximo_local;                              // La unica solucion que tenemos, es la mejor inicialmente
 
     do {        
         maximo_local_econtrado = false;
         do {
             // Buscamos el maximo local
-            //vecina = maximo_local.vecinaMasVacio_MenosEspacio();        // Obtenemos una vecina a partir de maximo local actual
-            //vecina = maximo_local.vecinaMasVacio_Primero();
-            //vecina = maximo_local.vecinaAzar_Primero();
             vecina = maximo_local.vecinaAzar_MenosEspacio();
-            //vecina = maximo_local.vecinaAzar_Azar();
             busquedas_de_vecina++;
 
             if(vecina.getNumeroContenedores() <= maximo_local.getNumeroContenedores())  // Si se mejora o se iguala el maximo local lo cambiamos
@@ -43,13 +36,10 @@ Solucion Bpp::ILS(unsigned instancia) {
         if(maximo_local.getNumeroContenedores() < maximo.getNumeroContenedores()){
             maximo = maximo_local;      // Aceptamos el maximo local como mejor solucion mejora el numero de contenedores
             ultimo_cambio = 0;
-            //cout << "maximo mejorado: ";
-            //maximo_local.mostrar();
         }
         else {
             ultimo_cambio++;
         }
-
         maximo_local = obtenerSolucionInicial(instancia); // Obtenemos otra solucion inicial diferente
 
     } while(ultimo_cambio < 10000); // este control es valido si dentro de mejorarILS, la mejor no siempre se hace igual
@@ -57,19 +47,19 @@ Solucion Bpp::ILS(unsigned instancia) {
     return maximo;
 }
 
+// METODO PARA REALIZAR BUSQUEDA 'SIMULATED ANNELING'
 Solucion Bpp::SA(unsigned instancia){
 
     Solucion solucion;
     Solucion vecina;
-    double alfa = 0.995;
-    double c = 0.999;
+    double alfa = 0.995;        // Factor de reduccion para la constante C
+    double c = 0.987;           // Probabilidad de aceptacion de vecinas peores
+    unsigned k = 233;           // frecuencia con la que se bajara la probabilidad
     double aleatorio;
-    unsigned k = 1000;        // frecuencia con la que se bajara la probabilidad
     unsigned iteraciones;
 
     // Obtenemos una solucion inicial a partir de la instancia
     solucion = obtenerSolucionInicial(instancia);
-    //mejor_solucion = solucion_inicial;
 
     iteraciones = 0;
     do {
@@ -88,13 +78,52 @@ Solucion Bpp::SA(unsigned instancia){
             if(aleatorio <= c)
                 solucion = vecina;
         }
-
         if(iteraciones > k){
             c = c * alfa;
             iteraciones = 0;
         }
-
     } while(c > 0.0001);
+
+    return solucion;
+}
+
+// METODO PARA REALIZAR LA BUSQUEDA 'TABU SEARCH'
+Solucion Bpp::TS(unsigned instancia){
+
+    Solucion solucion;
+    Solucion vecina;
+    unsigned t = 7;             // Tamaño maximo de la memoria
+    vector<unsigned> tabu;      // Memoria de los ultimos paquetes movidos
+    bool en_tabu;
+    unsigned ultimo_paquete;
+    unsigned ultimo_cambio;
+
+    solucion = obtenerSolucionInicial(instancia);
+
+    do {
+        vecina = solucion.vecinaAzar_MenosEspacio();
+
+        if(vecina.getNumeroContenedores() <= solucion.getNumeroContenedores()){
+            en_tabu = false;
+            ultimo_paquete = vecina.getUltimoPaqueteMovido();
+            for(unsigned i=0; i<tabu.size(); i++){
+                if(tabu[i] == ultimo_paquete)
+                    en_tabu = true;
+            }
+            if(!en_tabu){
+                solucion = vecina;                  // Aceptamos la solucion vecina
+                tabu.push_back(ultimo_paquete);     // Añadimos el ultimo paquete movido al final de la lista tabu
+                ultimo_cambio = 0;
+
+                if(tabu.size() > t){                // Si la lista ya esta llena, quitamos el primer elemnto
+                    tabu.erase(tabu.begin());
+                }
+            }
+        }
+
+        ultimo_cambio++;
+
+    } while(ultimo_cambio < 1000);
 
     return solucion;
 }
@@ -129,6 +158,7 @@ void Bpp::cargarInstancias(ifstream &fichero){
     }
 }
 
+// METODO PARA OBETENER UNA SOLUCION INICIAL
 Solucion Bpp::obtenerSolucionInicial(unsigned indice){
 
     Solucion solucion(instancias[indice]);
@@ -136,7 +166,33 @@ Solucion Bpp::obtenerSolucionInicial(unsigned indice){
     return solucion;
 }
 
+// METODO PARA LANZAR TODAS LAS BUSQUEDAS CON CADA UNA DE LAS INSTANCIAS
+void Bpp::lanzarEstudio(){
 
+    Solucion solucion;
+
+    for(unsigned i=0; i<numero_instancias; i++){
+        cout << "Instancia:      " << instancias[i].getNombre() << endl;
+        cout << "Mejor solucion: " << instancias[i].getMejorSolucion() << endl;
+
+        cout << "-> Calculando ILS... ";
+        solucion = ILS(i);
+        solucion.mostrar();
+        cout << endl;
+
+        cout << "-> Calculando SA...  ";
+        solucion = SA(i);
+        solucion.mostrar();
+        cout << endl;
+
+        cout << "-> Calculando TS...  ";
+        solucion = TS(i);
+        solucion.mostrar();
+        cout << endl;
+
+        cout << "--------------------------------------" << endl;
+    }
+}
 
 
 

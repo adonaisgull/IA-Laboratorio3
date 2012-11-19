@@ -26,12 +26,7 @@ public:
     inline unsigned getMejorSolucion() { return mejor_solucion; }
     inline vector<unsigned> getLongitudPaquetes(){ return longitud_paquetes; }
 
-    // BORRAR
-    void mostrar();
-
     inline unsigned getLongitudPaquete(unsigned indice) { return longitud_paquetes[indice]; } // Recibe el ID del paquete para devolver su longitud
-    //unsigned obtenerPaquete();  // devuelve el ID de un paquete segun un criterio de seleccion. Quiza se pueda poner una opcion (azar, mayor, menor)
-
 };
 
 #endif // INSTANCIA_H
