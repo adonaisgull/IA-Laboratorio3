@@ -16,7 +16,7 @@ int main(void){
 
     //char ruta_fichero[255];
     Bpp bpp;
-    Solucion final;
+    Solucion solILS, solSA;
 
     //cout << "Introduzca ruta fichero instancias: ";
     //cin >> ruta_fichero;
@@ -27,10 +27,14 @@ int main(void){
 
     srand(time(NULL));
 
-    //cout << "Solucion inicial: ";
+    cout << "Calculando ILS..."<< endl;
+    solILS = bpp.ILS(1);
+    cout << "Solucion ILS: ";
+    solILS.mostrar();
 
-    final = bpp.ILS(0);
+    cout << "Calculando SA..."<< endl;
+    solSA = bpp.SA(2);
+    cout << "Solucion SA: ";
+    solSA.mostrar();
 
-    cout << "Solucion final: ";
-    final.mostrar();
 }

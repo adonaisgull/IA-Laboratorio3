@@ -1,6 +1,7 @@
 #include "../include/bpp.h"
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -8,9 +9,8 @@ Bpp::Bpp(){
 
 }
 
-Solucion Bpp::ILS(unsigned indice) {
+Solucion Bpp::ILS(unsigned instancia) {
 
-    // El indice es el indice de la instancia con la que se va a trabajar
     Solucion maximo;
     Solucion maximo_local;
     Solucion vecina;
@@ -18,17 +18,18 @@ Solucion Bpp::ILS(unsigned indice) {
     unsigned ultimo_cambio = 0;
     unsigned busquedas_de_vecina = 0;
 
-    maximo_local = obtenerSolucionInicial(indice); // Creamos una solucion inicial factible
+    maximo_local = obtenerSolucionInicial(instancia); // Creamos una solucion inicial factible a partir de una instancia
     maximo = maximo_local;      // La unica solucion que tenemos, es la mejor inicialmente
-
-    cout << "maximo inicial: ";
-    maximo.mostrar();
 
     do {        
         maximo_local_econtrado = false;
         do {
             // Buscamos el maximo local
-            vecina = maximo_local.vecinaMasVacio_menosEspacio();        // Obtenemos una vecina a partir de maximo local actual
+            //vecina = maximo_local.vecinaMasVacio_MenosEspacio();        // Obtenemos una vecina a partir de maximo local actual
+            //vecina = maximo_local.vecinaMasVacio_Primero();
+            //vecina = maximo_local.vecinaAzar_Primero();
+            vecina = maximo_local.vecinaAzar_MenosEspacio();
+            //vecina = maximo_local.vecinaAzar_Azar();
             busquedas_de_vecina++;
 
             if(vecina.getNumeroContenedores() <= maximo_local.getNumeroContenedores())  // Si se mejora o se iguala el maximo local lo cambiamos
@@ -36,23 +37,66 @@ Solucion Bpp::ILS(unsigned indice) {
             else
                 maximo_local_econtrado = true;
 
-        } while(!maximo_local_econtrado && busquedas_de_vecina < 100000);
+        } while(!maximo_local_econtrado && busquedas_de_vecina < 1000);
 
-        if(maximo_local.getNumeroContenedores() <= maximo.getNumeroContenedores()){
-            maximo = maximo_local;  // Aceptamos el maximo local como mejor solucion si igual o mejor el numero de contenedores
+        // PARA COMPROBAR SI ES MEJOR SOLUCION HACER LO DE LA SUMA DE CUADRADOS
+        if(maximo_local.getNumeroContenedores() < maximo.getNumeroContenedores()){
+            maximo = maximo_local;      // Aceptamos el maximo local como mejor solucion mejora el numero de contenedores
             ultimo_cambio = 0;
-            cout << "maximo mejorado: ";
-            maximo_local.mostrar();
+            //cout << "maximo mejorado: ";
+            //maximo_local.mostrar();
         }
         else {
             ultimo_cambio++;
         }
 
-        maximo_local = obtenerSolucionInicial(indice); // Obtenemos otra solucion inicial diferente
+        maximo_local = obtenerSolucionInicial(instancia); // Obtenemos otra solucion inicial diferente
 
-    } while(ultimo_cambio < 100000); // este control es valido si dentro de mejorarILS, la mejor no siempre se hace igual
+    } while(ultimo_cambio < 10000); // este control es valido si dentro de mejorarILS, la mejor no siempre se hace igual
 
     return maximo;
+}
+
+Solucion Bpp::SA(unsigned instancia){
+
+    Solucion solucion;
+    Solucion vecina;
+    double alfa = 0.995;
+    double c = 0.999;
+    double aleatorio;
+    unsigned k = 1000;        // frecuencia con la que se bajara la probabilidad
+    unsigned iteraciones;
+
+    // Obtenemos una solucion inicial a partir de la instancia
+    solucion = obtenerSolucionInicial(instancia);
+    //mejor_solucion = solucion_inicial;
+
+    iteraciones = 0;
+    do {
+        iteraciones++;
+        vecina = solucion.vecinaAzar_MenosEspacio();
+
+        // Si la vecina mejora la solucion la aceptamos
+        if(vecina.getNumeroContenedores() < solucion.getNumeroContenedores()) {
+            solucion = vecina;
+            //solucion.mostrar();
+        }
+        else {  // Si no la mejora, la aceptamos con probabilidad c
+            aleatorio = rand() % 1000 +1;
+            aleatorio = aleatorio/1000;
+
+            if(aleatorio <= c)
+                solucion = vecina;
+        }
+
+        if(iteraciones > k){
+            c = c * alfa;
+            iteraciones = 0;
+        }
+
+    } while(c > 0.0001);
+
+    return solucion;
 }
 
 void Bpp::cargarInstancias(ifstream &fichero){

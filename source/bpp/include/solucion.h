@@ -23,13 +23,18 @@ public:
     Solucion(){};
     Solucion(Instancia);        // Genera una solucion inicial. Puede que haya varias formas, entonces hacer metodos diferentes para crearla.
 
-    Solucion vecinaAzar();
-    Solucion vecinaMasVacio_menosEspacio();
-    Solucion vecinaMasVacio_primero();
-    Solucion vecinaMayorPaquete();
+    Solucion vecinaAzar_Primero();
+    Solucion vecinaAzar_MenosEspacio();
+    Solucion vecinaAzar_Azar();
+    Solucion vecinaMasVacio_MenosEspacio();
+    Solucion vecinaMasVacio_Primero();
+    Solucion vecinaMasVacio_Azar();
 
+    void eliminarContenedor(unsigned contenedor);
     void meterPaqueteEnContenedorNuevo(unsigned paquete);
     Solucion getCopia();
+
+    bool contenedorVacio(unsigned contenedor);
 
     // Getters
     inline unsigned getNumeroContenedores() { return numero_contenedores; }
@@ -45,6 +50,8 @@ public:
 
     // PARA BORRAR O NO
     void mostrar();
+
+    inline unsigned getContenedorDelPaquete(unsigned paquete) { return solucion[paquete]; }
 };
 
 #endif // SOLUCION_H
