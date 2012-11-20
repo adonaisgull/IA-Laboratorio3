@@ -5,6 +5,8 @@
 #include "../bpp/include/instancia.h"
 #include "../bpp/include/solucion.h"
 #include "../bpp/include/bpp.h"
+#include "../bpp/include/lrc.h"
+#include "../bpp/include/paso.h"
 
 #include <iostream>
 #include <fstream>
@@ -27,4 +29,6 @@ int main(void){
     srand(time(NULL));
 
     bpp.lanzarEstudio();
+
+
 }

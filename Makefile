@@ -8,8 +8,8 @@ CINLC=-Isource/bpp/include
 
 all: main
 
-main: bpp_main.o instancia.o solucion.o bpp.o
-	$(CC) compiled/o/instancia.o compiled/o/solucion.o compiled/o/bpp.o compiled/o/bpp_main.o -o compiled/bpp_main
+main: bpp_main.o instancia.o solucion.o bpp.o lrc.o
+	$(CC) compiled/o/instancia.o compiled/o/solucion.o compiled/o/bpp.o compiled/o/lrc.o compiled/o/bpp_main.o -o compiled/bpp_main
 
 bpp_main.o: source/main/bpp_main.cpp
 	$(CC) $(CFLAGS) compiled/o/bpp_main.o source/main/bpp_main.cpp
@@ -22,6 +22,9 @@ solucion.o: source/bpp/lib/solucion.cpp
 
 bpp.o: source/bpp/lib/bpp.cpp
 	$(CC) $(CFLAGS) compiled/o/bpp.o source/bpp/lib/bpp.cpp
+
+lrc.o: source/bpp/lib/lrc.cpp
+	$(CC) $(CFLAGS) compiled/o/lrc.o source/bpp/lib/lrc.cpp
 
 clean:
 	rm -rf compiled/o/*o compiled/bpp_main

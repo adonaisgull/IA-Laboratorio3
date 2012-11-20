@@ -27,6 +27,7 @@ private:
     Solucion VNS(unsigned);
 
     Solucion obtenerSolucionInicial(unsigned);          // Devuelve una solucion inicial a partir del indice de la instancia que se le pasa
+    Solucion obtenerSolucionVacia(unsigned);
 
 public:
     Bpp() {}

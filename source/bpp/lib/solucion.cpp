@@ -290,6 +290,13 @@ void Solucion::moverPaquete(unsigned paquete, unsigned contenedor_destino){
         eliminarContenedor(origen);
 }
 
+// METODO PARA METER UN PAQUETE QUE NO ESTABA EN LA SOLUCION EN UN CONTENEDOR EXISTENTE
+void Solucion::meterPaqueteEnContenedorExistente(unsigned paquete, unsigned contenedor){
+
+    solucion[paquete] = contenedor;
+    capacidad_contenedores[contenedor] -= instancia.getLongitudPaquete(paquete);
+}
+
 // METODO PARA ELIMINAR UN CONTENEDOR
 void Solucion::eliminarContenedor(unsigned contenedor){
 

@@ -46,12 +46,18 @@ public:
     inline Instancia getInstancia(){ return instancia; }
     inline unsigned getUltimoPaqueteMovido() { return ultimo_paquete_movido; }
 
+    inline unsigned getCapacidadContenedor(unsigned contenedor) { return capacidad_contenedores[contenedor]; }
+
     // Setters
     inline void setNumeroContenedores(unsigned _numero_contenedores) { numero_contenedores = _numero_contenedores; }
     inline void setCapacidadContenedores(vector<unsigned> _capacidad_contenedores) { capacidad_contenedores = _capacidad_contenedores; }
     inline void setSolucion(vector<unsigned> _solucion) { solucion = _solucion; }
     inline void setInstancia(Instancia _instancia) { instancia = _instancia; }
     inline void setUltimoPaqueteMovido(unsigned paquete) { ultimo_paquete_movido = paquete; }
+
+    void meterPaqueteEnContenedorExistente(unsigned paquete, unsigned contenedor);
+    inline void insertarContenedorVacio() { capacidad_contenedores.push_back(instancia.getCapacidadContenedores()); numero_contenedores++; }
+
 
     // PARA BORRAR O NO
     void mostrar();
