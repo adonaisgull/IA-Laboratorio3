@@ -33,7 +33,7 @@ public:
     Solucion(){};
     Solucion(Instancia);        // Genera una solucion inicial. Puede que haya varias formas, entonces hacer metodos diferentes para crearla.
 
-    Solucion vecinaAzar_Primero();
+    Solucion vecinaAzar_Primero(unsigned k=1);
     Solucion vecinaAzar_MenosEspacio();
     Solucion vecinaAzar_Azar();
     Solucion vecinaMasVacio_MenosEspacio();

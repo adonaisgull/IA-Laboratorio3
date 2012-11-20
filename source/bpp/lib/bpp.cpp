@@ -101,7 +101,7 @@ Solucion Bpp::TS(unsigned instancia){
     solucion = obtenerSolucionInicial(instancia);
 
     do {
-        vecina = solucion.vecinaAzar_MenosEspacio();
+        vecina = solucion.vecinaAzar_Primero();
 
         if(vecina.getNumeroContenedores() <= solucion.getNumeroContenedores()){
             en_tabu = false;
@@ -124,6 +124,51 @@ Solucion Bpp::TS(unsigned instancia){
         ultimo_cambio++;
 
     } while(ultimo_cambio < 1000);
+
+    return solucion;
+}
+
+Solucion Bpp::VNS(unsigned instancia){
+
+    Solucion solucion;
+    Solucion vecina;
+    Solucion maximo_local;
+    unsigned k;
+    unsigned k_max = 13;
+    bool maximo_local_encontrado;
+    unsigned busquedas_de_vecina;
+
+    solucion = obtenerSolucionInicial(instancia);
+
+    k = 1;
+    do {
+        maximo_local = solucion.vecinaAzar_Primero(k);  // Inicialmente el maximo local será la vecina que se genere de la agitacion
+
+        busquedas_de_vecina = 0;
+        maximo_local_encontrado = false;
+        do {
+            // Buscamos el maximo local
+            vecina = maximo_local.vecinaMasVacio_MenosEspacio();
+            busquedas_de_vecina++;
+
+            if(vecina.getNumeroContenedores() <= maximo_local.getNumeroContenedores())  // Si se mejora o se iguala el maximo local lo cambiamos
+                maximo_local = vecina;
+            else
+                maximo_local_encontrado = true;
+
+        } while(!maximo_local_encontrado && busquedas_de_vecina < 1000);
+
+        // Ya tenemos el maximo local. Lo comparamos con la solucion actual
+
+        if(maximo_local.getNumeroContenedores() < solucion.getNumeroContenedores()){
+            solucion = maximo_local;
+            k = 1;
+        }
+        else{
+            k++;
+        }
+
+    } while(k < k_max);
 
     return solucion;
 }
@@ -187,6 +232,11 @@ void Bpp::lanzarEstudio(){
 
         cout << "-> Calculando TS...  ";
         solucion = TS(i);
+        solucion.mostrar();
+        cout << endl;
+
+        cout << "-> Calculando VNS... ";
+        solucion = VNS(i);
         solucion.mostrar();
         cout << endl;
 

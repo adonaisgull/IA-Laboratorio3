@@ -180,26 +180,39 @@ Solucion Solucion::vecinaAzar_MenosEspacio(){
 }
 
 // METODO BUSCAR VECINA. SEL PAQ: AZAR; SEL CONT: PRIMERO DONDE QUEPA
-Solucion Solucion::vecinaAzar_Primero(){
+Solucion Solucion::vecinaAzar_Primero(unsigned k){
 
     Solucion vecina = this->getCopia();
-    unsigned paquete = rand() % instancia.getNumeroPaquetes();  // Obtenemos un paqute al azar
-    unsigned contenedor_origen = getContenedorDelPaquete(paquete);
+    unsigned paquete;
+    unsigned contenedor_origen;
+    unsigned paquetes_movidos;
+    bool se_pudo_meter;
 
-    // Intentamos meter ese paquete en el primero contenedor que quepa
-    for(unsigned i= 0; i<numero_contenedores; i++){
-        if(i != contenedor_origen){
-            if(capacidad_contenedores[i] >= instancia.getLongitudPaquete(paquete)){
-                vecina.moverPaquete(paquete, i);
-                return vecina;
+    paquetes_movidos = 0;
+    while(paquetes_movidos < k){
+
+        paquete = rand() % instancia.getNumeroPaquetes();  // Obtenemos un paqute al azar
+        contenedor_origen = getContenedorDelPaquete(paquete);
+
+        // Intentamos meter ese paquete en el primero contenedor que quepa
+        se_pudo_meter = false;
+        for(unsigned i= 0; i<vecina.getNumeroContenedores(); i++){
+            if(i != contenedor_origen){
+                if(vecina.getCapacidadContenedores()[i] >= instancia.getLongitudPaquete(paquete)){
+                    vecina.moverPaquete(paquete, i);
+                    se_pudo_meter = true;
+                }
             }
         }
+
+        // Si no se pudo meter, entonces lo metemos en un contenedor nuevo
+        if(!se_pudo_meter)
+            vecina.meterPaqueteEnContenedorNuevo(paquete);
+
+        vecina.setUltimoPaqueteMovido(paquete); // En cualquier caso, el paquete movido será el mismo
+
+        paquetes_movidos++;
     }
-
-    // Si no se pudo meter, entonces lo metemos en un contenedor nuevo
-    vecina.meterPaqueteEnContenedorNuevo(paquete);
-
-    vecina.setUltimoPaqueteMovido(paquete); // Guardamos el ultimo paquete movido
 
     return vecina;
 }
